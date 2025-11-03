@@ -54,9 +54,9 @@ def main():
     model, scaler = create_model(data)
 
     # Export the model in the binary file in our model folder to import in our application
-    with open("model/model.pkl", "wb") as f:
+    with open('model.pkl', 'wb') as f:
         pickle.dump(model, f)
-    with open("model/scalar.pkl", "wb") as f:
+    with open('scaler.pkl', 'wb') as f:
         pickle.dump(scaler, f )
 
 
