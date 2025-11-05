@@ -193,8 +193,12 @@ def add_prediction(input_data):
     else:
         st.write("Malignant")
 
-    st.write("Probability of being Benign: ", model.predict_proba(input_array_scaled)[0][0])
-    st.write("Probability of being Malignant: ", model.predict_proba(input_array_scaled)[0][1])
+    proba = model.predict_proba(input_array_scaled)[0]
+
+    st.write(f"Probability of being Benign: {proba[0] * 100:.2f}%")
+    st.write(f"Probability of being Malignant: {proba[1] * 100:.2f}%")
+    # st.write("Probability of being Benign: ", model.predict_proba(input_array_scaled)[0][0]) 
+    # st.write("Probability of being Malignant: ", model.predict_proba(input_array_scaled)[0][1])
     st.write("This app can assist medical professionals in making a diagnosis, " \
     "but should not be used in the substitute for a professional diagnosis." )
 
