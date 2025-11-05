@@ -3,6 +3,8 @@ import streamlit as st
 import pickle
 import pandas as pd
 import math
+import plotly.graph_objects as go
+import numpy as np
 
 def get_clean_data():
     data = pd.read_csv("data/data.csv")
@@ -51,6 +53,8 @@ def add_sidebar():
         ('Worst Fractal Dimension', 'fractal_dimension_worst')
     ]
 
+    # create dictionary to return 
+    input_dict = {}
 
     for label, key in slider_labels:
 
@@ -65,12 +69,134 @@ def add_sidebar():
         min_label = min_value[0]
         max_value = (max_label,)
         
-        st.sidebar.slider(
-            label,
-            min_value=min_label,
-            max_value=max_label,
-            value=float(data[key].mean())
-        )
+        # create the sidebar slider
+        input_dict[key] = {
+            "value": st.sidebar.slider(
+                label,
+                min_value=min_label,
+                max_value=max_label,
+                value=float(data[key].mean()),
+            ),
+            "max": max_label,
+            "min": min_label
+        }
+    
+    return input_dict
+
+# scaled the data for our radar graph
+# make all data inrange of 0 and 1
+# Scaling by the min and max from the slider 
+def get_scaled_values(input_dict):
+
+    scaled_dict = {}
+
+    for key, value in input_dict.items():
+        actual_value = input_dict[key]["value"]
+        max_val = input_dict[key]["max"]
+        min_val = input_dict[key]["min"]
+        scaled_value = (actual_value - min_val) / (max_val - min_val)
+        scaled_dict[key] = scaled_value
+
+    return scaled_dict 
+
+def get_radar_chart(input_data):
+    input_data = get_scaled_values(input_data)
+    categories = ['Radius', 'Texture', 'Perimeter', 'Area', 
+                  'Smoothness', 'Compactness', 'Concavity', 
+                  'Concave Points', 'Symmetry', 'Fractal Dimension']
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=[
+            input_data['radius_mean'],
+            input_data['texture_mean'],
+            input_data['perimeter_mean'],
+            input_data['area_mean'],
+            input_data['smoothness_mean'],
+            input_data['compactness_mean'],
+            input_data['concavity_mean'],
+            input_data['concave points_mean'],
+            input_data['symmetry_mean'],
+            input_data['fractal_dimension_mean'],
+        ],
+        theta=categories,
+        fill='toself',
+        name='Mean Value'
+    ))
+
+    fig.add_trace(go.Scatterpolar(
+        r=[
+            input_data['radius_se'],
+            input_data['texture_se'],
+            input_data['perimeter_se'],
+            input_data['area_se'],
+            input_data['smoothness_se'],
+            input_data['compactness_se'],
+            input_data['concavity_se'],
+            input_data['concave points_se'],
+            input_data['symmetry_se'],
+            input_data['fractal_dimension_se'],
+        ],
+        theta=categories,
+        fill='toself',
+        name='Standard Error'
+    ))
+
+    fig.add_trace(go.Scatterpolar(
+        r=[
+            input_data['radius_worst'],
+            input_data['texture_worst'],
+            input_data['perimeter_worst'],
+            input_data['area_worst'],
+            input_data['smoothness_worst'],
+            input_data['compactness_worst'],
+            input_data['concavity_worst'],
+            input_data['concave points_worst'],
+            input_data['symmetry_worst'],
+            input_data['fractal_dimension_worst'],
+        ],
+        theta=categories,
+        fill='toself',
+        name='Worst Value'
+    ))
+
+    fig.update_layout(
+    polar=dict(
+        radialaxis=dict(
+        visible=True,
+        range=[0, 1]
+        )),
+    showlegend=True
+    )
+
+    return fig
+
+# Create the prediction part using pickle
+def add_prediction(input_data):
+    model = pickle.load(open("model/model.pkl", "rb"))
+    scaler = pickle.load(open("model/scaler.pkl", "rb"))
+
+    input_array = np.array([v["value"] for v in input_data.values()]).reshape(1, -1)
+    
+    # This will make the mean is 0 or make it become reference point
+    input_array_scaled = scaler.transform(input_array)
+
+    # create the prediction
+    prediction = model.predict(input_array_scaled)
+
+    if prediction[0] == 0:
+        st.write("Benign")
+    else:
+        st.write("Malignant")
+
+    st.write("Probability of being benign: ", model.predict_proba(input_array_scaled)[0][0])
+
+
+
+
+
+
 
 
 def main():
@@ -82,8 +208,7 @@ def main():
     )
 
     # create the side bar
-
-    add_sidebar()
+    input_data = add_sidebar()
 
     with st.container():
         st.title("🩺 Breast Cancer Predictor Application")
@@ -93,10 +218,11 @@ def main():
     col1, col2 = st.columns([4,1])
 
     with col1:
-        st.write("This is column 1")
+        radar_chart = get_radar_chart(input_data)
+        st.plotly_chart(radar_chart)
     
     with col2:
-        st.write("This is column 2")
+        add_prediction(input_data)
 
 
 
