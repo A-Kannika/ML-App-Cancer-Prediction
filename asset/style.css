@@ -1,0 +1,34 @@
+.st-emotion-cache-nwq0vs {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color:lightblue;
+}
+
+.diagnosis {
+    color:white;
+    padding: 0.5rem 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 0.5rem ;
+
+}
+
+.diagnosis.benign {
+
+    background-color:seagreen;
+}
+
+.diagnosis.malignant {
+    background-color:crimson;
+}
+
+.proba {
+    font-size: 1.2rem;
+}
+
+.proba.benign {
+    color: green;
+}
+
+.proba.malignant {
+    color: crimson;
+}

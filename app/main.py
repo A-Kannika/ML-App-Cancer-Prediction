@@ -5,6 +5,7 @@ import pandas as pd
 import math
 import plotly.graph_objects as go
 import numpy as np
+from streamlit_extras.stylable_container import stylable_container
 
 def get_clean_data():
     data = pd.read_csv("data/data.csv")
@@ -189,43 +190,44 @@ def add_prediction(input_data):
     st.write("The cell cluster is:")
 
     if prediction[0] == 0:
-        st.write("Benign")
+        st.write("<span class='diagnosis benign'>Benign</span>", unsafe_allow_html=True)
     else:
-        st.write("Malignant")
+        st.write("<span class='diagnosis malignant'>Malignant</span>", unsafe_allow_html=True)
 
     proba = model.predict_proba(input_array_scaled)[0]
 
-    st.write(f"Probability of being Benign: {proba[0] * 100:.2f}%")
-    st.write(f"Probability of being Malignant: {proba[1] * 100:.2f}%")
+    st.write(f"Probability of being Benign:")
+    st.write(f"<span class='proba benign'>{proba[0] * 100:.2f}%</span>", unsafe_allow_html=True)
+    st.write(f"Probability of being Malignant:")
+    st.write(f"<span class='proba malignant'>{proba[1] * 100:.2f}%</span>", unsafe_allow_html=True)
     # st.write("Probability of being Benign: ", model.predict_proba(input_array_scaled)[0][0]) 
     # st.write("Probability of being Malignant: ", model.predict_proba(input_array_scaled)[0][1])
     st.write("This app can assist medical professionals in making a diagnosis, " \
     "but should not be used in the substitute for a professional diagnosis." )
 
 
-
-
-
-
-
-
 def main():
     st.set_page_config(
-        page_title="Breast Cancer Predictor Application",
+        page_title="Breast Cancer Predictor Application ",
         page_icon="🩺",
         layout="wide",
         initial_sidebar_state="expanded"
     )
 
+    # working on the UI by modifying CSS
+    with open("asset/style.css") as f:
+        st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
+
+
     # create the side bar
     input_data = add_sidebar()
 
     with st.container():
-        st.title("🩺 Breast Cancer Predictor Application")
+        st.title("🩺 Breast Cancer Predictor Application V1")
         st.write("The Breast Cancer Predictor is a machine-learning–powered tool that helps estimate whether a tumor is likely benign or malignant, based on patient data. It's built using the Breast Cancer Wisconsin (Diagnostic) dataset from Kaggle.")
 
     # create 2 columns in the main page
-    col1, col2 = st.columns([4,1])
+    col1, col2 = st.columns([1.5,1])
 
     with col1:
         radar_chart = get_radar_chart(input_data)
@@ -233,6 +235,19 @@ def main():
     
     with col2:
         add_prediction(input_data)
+
+    # with col2:
+    #     with stylable_container(
+    #         key="markdown_container",
+    #         css_styles="""
+    #         {
+    #                 padding: 1rem;
+    #                 border-radius: 0.5rem;
+    #                 background-color:lightblue;
+    #             }
+    #         """
+    #     ):
+    #         st.markdown(add_prediction(input_data))
 
 
 
