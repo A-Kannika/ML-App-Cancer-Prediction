@@ -5,7 +5,7 @@ import pandas as pd
 import math
 import plotly.graph_objects as go
 import numpy as np
-from streamlit_extras.stylable_container import stylable_container
+# from streamlit_extras.stylable_container import stylable_container
 
 def get_clean_data():
     data = pd.read_csv("data/data.csv")

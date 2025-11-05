@@ -1,7 +1,4 @@
 streamlit
-pickle
 pandas
-math
 plotly
 numpy
-streamlit_extras
