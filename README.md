@@ -3,6 +3,9 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ml-app-cancer-prediction.streamlit.app/)
 
 A simple web application built with Streamlit to predict breast cancer (Malignant or Benign) based on diagnostic features.
+It's built using the Breast Cancer Wisconsin (Diagnostic) dataset from Kaggle.
+https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data
+
 
 ## 🚀 Live Demo
 
