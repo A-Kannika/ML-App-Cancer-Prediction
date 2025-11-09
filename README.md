@@ -64,3 +64,6 @@ To run this application on your local machine, follow these steps:
     streamlit run app.py
     ```
     Your browser should automatically open to `http://localhost:8501`.
+
+    Learning resources
+    https://www.youtube.com/watch?v=NfwfiyMi1lk
